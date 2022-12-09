@@ -44,7 +44,6 @@ Route::apiResources([
 
 Route::apiResource('/users', UserController::class)->middleware('check.role');
 
-
 /*
 |--------------------------------------------------------------------------
 | Authentication API Routes
