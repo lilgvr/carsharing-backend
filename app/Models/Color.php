@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Color extends Model
+class Color extends ApiBaseModel
 {
     use HasFactory;
+
+    protected $fillable = ['title'];
+
+    protected $table = 'colors';
 }

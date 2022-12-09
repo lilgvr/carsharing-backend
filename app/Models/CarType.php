@@ -3,16 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class CarType extends Model
+class CarType extends ApiBaseModel
 {
     use HasFactory;
 
     protected $fillable = ["title"];
 
-    protected $hidden = [
-        "created_at",
-        "updated_at"
-    ];
+    protected $table = 'car_types';
 }

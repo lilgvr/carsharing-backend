@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->integer('current_car_id')->nullable();
+            $table->bigInteger('car_id', false, true);
             $table->rememberToken();
             $table->timestamps();
         });

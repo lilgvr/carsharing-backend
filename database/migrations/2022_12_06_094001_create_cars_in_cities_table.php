@@ -12,10 +12,11 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('cities', function (Blueprint $table) {
+        Schema::create('cars_in_cities', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('title');
+            $table->bigInteger('city_id', false, true);
+            $table->bigInteger('car_id', false, true);
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('cities');
+        Schema::dropIfExists('cars_in_cities');
     }
 };

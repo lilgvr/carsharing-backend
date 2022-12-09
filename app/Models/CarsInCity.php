@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Tariff extends ApiBaseModel
+class CarsInCity extends ApiBaseModel
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'cost'
+        'city_id',
+        'car_id'
     ];
 
-    protected $table = 'tariffs';
+    protected $table = 'cars_in_cities';
 }

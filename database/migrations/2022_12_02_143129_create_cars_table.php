@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->integer('production_year');
             $table->double('lat')->nullable();
             $table->double('lng')->nullable();
-            $table->integer('mileage')->default(0);
+            $table->integer('mileage');
             $table->boolean('is_busy')->default(false);
 
             /*$table->foreign('company_id')->references('id')->on('car_companies');

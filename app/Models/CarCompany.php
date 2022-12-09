@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class CarCompany extends Model
+class CarCompany extends ApiBaseModel
 {
     use HasFactory;
+    protected $fillable = ['title'];
+    protected $table = 'car_companies';
 }

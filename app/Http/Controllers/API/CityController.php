@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\CarType;
+use App\Http\Controllers\ApiController;
+use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
-class CarTypeController extends Controller
+class CityController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -14,52 +16,57 @@ class CarTypeController extends Controller
      */
     public function index()
     {
-        return CarType::all();
+        return City::all();
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
-
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $type = new CarType();
+        $city = new City();
         $data = $request->input();
 
-        $type->title = $data["title"];
-        $type->save();
+        $city->title = $data['title'];
+
+        $city->save();
+
+        return response()->json(['message' => 'Success', 'status' => 200]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\CarType $carType
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
-    public function show(CarType $carType)
+    public function show(int $id)
     {
-        //
+        $city = City::all()->find($id);
+        if (!$city) return response(null, 404);
+        return $city;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\CarType $carType
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\City $city
+     * @return Response
      */
-    public function edit(CarType $carType)
+    public function edit(City $city)
     {
         //
     }
@@ -68,10 +75,10 @@ class CarTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\CarType $carType
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\City $city
+     * @return Response
      */
-    public function update(Request $request, CarType $carType)
+    public function update(Request $request, City $city)
     {
         //
     }
@@ -79,10 +86,10 @@ class CarTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\CarType $carType
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\City $city
+     * @return Response
      */
-    public function destroy(CarType $carType)
+    public function destroy(City $city)
     {
         //
     }
