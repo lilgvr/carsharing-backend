@@ -1,23 +1,11 @@
-FROM webdevops/php-nginx:8.0-alpine
-
-#RUN docker-php-ext-install pdo pdo_mysql sockets
-#RUN curl -sS https://getcomposer.org/installer | php -- \
-#     --install-dir=/usr/local/bin --filename=composer
-#
-#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-#
-#WORKDIR /app
-#COPY . .
-#RUN composer update
-#RUN composer install
-
-# Устанавливаем рабочую директорию
-WORKDIR /var/www
-
-# Копируем composer.lock и composer.json
+FROM php:8.1.10-fpm
+# Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
 
-# Устанавливаем зависимости
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
@@ -29,30 +17,35 @@ RUN apt-get update && apt-get install -y \
     vim \
     unzip \
     git \
-    curl
+    curl \
+    libzip-dev libonig-dev  \
+    iputils-ping sudo telnet default-mysql-client net-tools # Debug dependencies
 
-# Очищаем кэш
+# Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем расширения PHP
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
-RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+# Install extensions
+RUN docker-php-ext-install pdo_mysql zip exif pcntl
+RUN #docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
 RUN docker-php-ext-install gd
 
-# Загружаем актуальную версию Composer
+# Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Создаём пользователя и группу www для приложения Laravel
+# Add user for laravel application
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
 
-# Копируем содержимое текущего каталога в рабочую директорию
+# Copy existing application directory contents
 COPY . /var/www
+
+# Copy existing application directory permissions
 COPY --chown=www:www . /var/www
 
-# Меняем пользователя на www
+# Change current user to www
 USER www
 
-# В контейнере открываем 9000 порт и запускаем сервер php-fpm
+# Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
