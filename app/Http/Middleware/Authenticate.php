@@ -30,6 +30,9 @@ class Authenticate extends Middleware
         $key = Config::get('values.key');
         $alg = Config::get('values.alg');
 
+        if (!$request->header('Authorization'))
+            return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
+
         if ($token = explode(" ", $request->header('Authorization'))) {
             $email = json_decode(json_encode(JWT::decode($token[1], new Key($key, $alg))), true);
 
