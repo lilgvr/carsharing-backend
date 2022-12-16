@@ -7,15 +7,21 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+### Generate JWT key
 
-## Build project image and run in docker-compose
 ```bash
-docker-compose up -d
-```
-```bash
-docker-compose exec app php artisan migrate
+php artisan jwt:key
 ```
 
+### Start project 
+
+```bash
+composer install
+```
+
+```bash
+php artisan serve
+```
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
