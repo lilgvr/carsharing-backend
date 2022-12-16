@@ -7,7 +7,6 @@ use App\Models\Color;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ColorController extends ApiController
 {
@@ -19,16 +18,6 @@ class ColorController extends ApiController
     public function index(): Collection
     {
         return Color::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-
     }
 
     /**
@@ -60,17 +49,6 @@ class ColorController extends ApiController
         $color = Color::all()->find($id);
         if (!$color) return response()->json(['message' => 'Not found', 'status' => 404], 404);
         return $color;
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Color $color
-     * @return Response
-     */
-    public function edit(Color $color)
-    {
-
     }
 
     /**

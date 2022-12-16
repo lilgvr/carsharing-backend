@@ -22,7 +22,11 @@ class RentCarController extends ApiController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Bind Car to User
+     *
+     * Route: /api/rentCar/{ carId }
+     *
+     * Request body: { userId: number }
      *
      * @param int $id
      * @return Collection|JsonResponse

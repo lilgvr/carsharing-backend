@@ -16,11 +16,12 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->integer('current_car_id')->nullable();
-            $table->bigInteger('car_id', false, true);
-            $table->rememberToken();
+            $table->string('api_token')
+                ->unique()
+                ->nullable();
+            $table->string('role')->default('user');
+            $table->bigInteger('current_car_id', false, true)->nullable();
             $table->timestamps();
         });
     }

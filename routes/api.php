@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,10 +40,13 @@ Route::apiResources([
     '/companies' => CarCompanyController::class,
     '/colors' => ColorController::class,
     '/rentCar' => RentCarController::class,
-    '/carsInCity' => CarsInCityController::class
+    '/carsInCity' => CarsInCityController::class,
 ]);
 
-Route::apiResource('/users', UserController::class)->middleware('check.role');
+Route::apiResource('/users', UserController::class)->middleware('auth:api');
+
+Route::apiResource('/register', RegisterController::class);
+Route::apiResource('/login', RegisterController::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +55,7 @@ Route::apiResource('/users', UserController::class)->middleware('check.role');
 |
 */
 
-Route::apiResource('/register', RegisteredUserController::class)
+/*Route::apiResource('/register', RegisteredUserController::class)
     ->middleware('guest');
 
 Route::apiResource('/login', AuthenticatedSessionController::class)
@@ -70,4 +74,4 @@ Route::apiResource('/email/verification-notification', EmailVerificationNotifica
     ->middleware(['auth', 'throttle:6,1']);
 
 Route::apiResource('/logout', AuthenticatedSessionController::class)
-    ->middleware('auth');
+    ->middleware('auth');*/
