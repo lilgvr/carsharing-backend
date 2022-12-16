@@ -49,7 +49,7 @@ Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
 Route::group([
 
-    'middleware' => 'api',
+    'middleware' => ['api', 'auth'],
     'prefix' => 'auth'
 
 ], function () {
