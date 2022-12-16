@@ -13,6 +13,6 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        $this->middleware('check.role')->only(['store', 'update', 'destroy']);
+//        $this->middleware('check.role')->only(['store', 'update', 'destroy']);
     }
 }

@@ -7,12 +7,6 @@ use App\Http\Controllers\API\CarTypeController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\ColorController;
 use App\Http\Controllers\API\RentCarController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
@@ -42,12 +36,14 @@ Route::apiResources([
     '/colors' => ColorController::class,
     '/rentCar' => RentCarController::class,
     '/carsInCity' => CarsInCityController::class,
-    '/login' => LoginController::class,
-    '/register' => RegisterController::class
 ]);
 
 Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/register', RegisterController::class);
+    Route::post('/login', LoginController::class);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -56,23 +52,3 @@ Route::apiResource('/users', UserController::class)->middleware('auth:api');
 |
 */
 
-/*Route::apiResource('/register', RegisteredUserController::class)
-    ->middleware('guest');
-
-Route::apiResource('/login', AuthenticatedSessionController::class)
-    ->middleware(['guest', 'web']);
-
-Route::apiResource('/forgot-password', PasswordResetLinkController::class)
-    ->middleware('guest');
-
-Route::apiResource('/reset-password', NewPasswordController::class)
-    ->middleware('guest');
-
-Route::apiResource('/verify-email/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth', 'signed', 'throttle:6,1']);
-
-Route::apiResource('/email/verification-notification', EmailVerificationNotificationController::class)
-    ->middleware(['auth', 'throttle:6,1']);
-
-Route::apiResource('/logout', AuthenticatedSessionController::class)
-    ->middleware('auth');*/

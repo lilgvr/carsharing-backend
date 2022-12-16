@@ -2,25 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
 use App\Models\User;
-use App\service\JwtService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function store(Request $request)
+    use ApiHelpers;
+
+    public function show(Request $request, int $id)
     {
-        $user = new User();
+
+    }
+
+    public function store(Request $request): JsonResponse
+    {
         $data = $request->input();
 
-        $user->name = $data["name"];
-        $user->email = $data["name"];
-        $user->password = Hash::make($data["name"]);
-        $user->api_token = JwtService::encode(6, $user->name);
+        $ifExist = User::all()->where('email', $data["email"]);
 
+        if ($ifExist->count() != 0)
+            return response()->json(['message' => 'Already registered', 'status' => 401], 401);
+
+        $user = new User();
+
+        $user->name = $data["name"];
+        $user->email = $data["email"];
+        $user->password = Hash::make($data["password"]);
+        $user->save();
+        $token = $user->createToken($data["name"])->accessToken;
+        $user->api_token = $token;
         $user->save();
 
-        return response()->json(['message' => 'Success', 'status' => 200, 'data' => $user]);
+        return response()->json(['message' => 'Success', 'status' => 200, 'data' => [$user, $token]]);
     }
 }
