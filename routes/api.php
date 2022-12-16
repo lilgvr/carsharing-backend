@@ -7,8 +7,7 @@ use App\Http\Controllers\API\CarTypeController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\ColorController;
 use App\Http\Controllers\API\RentCarController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,11 +39,6 @@ Route::apiResources([
 
 Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('/register', RegisterController::class);
-    Route::post('/login', LoginController::class);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Authentication API Routes
@@ -52,3 +46,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 |
 */
 
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function () {
+
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+
+});

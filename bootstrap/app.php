@@ -41,6 +41,9 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+//$app->register(App\Providers\AuthServiceProvider::class);
+//$app->register(PHPOpenSourceSaver\JWTAuth\Providers\LumenServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application

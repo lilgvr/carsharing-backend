@@ -2,107 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Library\ApiHelpers;
-use App\Models\Car;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    use ApiHelpers;
-
-    // <---- Использование трейта apiHelpers
-
-    public function cars(Request $request): JsonResponse
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        if ($this->isAdmin($request->user())) {
-            $car = DB::table('cars')->get();
-            return $this->onSuccess($car, 'Car Retrieved');
-        }
-        return $this->onError(401, 'Unauthorized Access');
+        $this->middleware('auth:api', ['except' => ['login']]);
+        parent::__construct();
     }
 
-    public function singlePost(Request $request, $id): JsonResponse
+    /**
+     * Get a JWT via given credentials.
+     *
+     * @return JsonResponse
+     */
+    public function login()
     {
-        $user = $request->user();
-        if ($this->isAdmin($user) || $this->isWriter($user) || $this->isSubscriber($user)) {
-            $post = DB::table('posts')->where('id', $id)->first();
-            if (!empty($post)) {
-                return $this->onSuccess($post, 'Post Retrieved');
-            }
-            return $this->onError(404, 'Post Not Found');
+        $credentials = request(['email', 'password']);
+
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->onError(401, 'Unauthorized Access');
+
+        return $this->respondWithToken($token);
     }
 
-    public function createPost(Request $request): JsonResponse
+    /**
+     * Get the authenticated User.
+     *
+     * @return JsonResponse
+     */
+    public function me()
     {
-        $user = $request->user();
-        if ($this->isAdmin($user) || $this->isWriter($user)) {
-            $validator = Validator::make($request->all(), $this->postValidationRules());
-            if ($validator->passes()) {
-                $post = new Car();
-                $post->title = $request->input('title');
-                $post->slug = Str::slug($request->input('title'));
-                $post->content = $request->input('content');
-                $post->save();
-                return $this->onSuccess($post, 'Post Created');
-            }
-            return $this->onError(400, $validator->errors());
-        }
-        return $this->onError(401, 'Unauthorized Access');
+        return response()->json(auth()->user());
     }
 
-    public function updatePost(Request $request, $id): JsonResponse
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return JsonResponse
+     */
+    public function logout()
     {
-        $user = $request->user();
-        if ($this->isAdmin($user) || $this->isWriter($user)) {
-            $validator = Validator::make($request->all(), $this->postValidationRules());
-            if ($validator->passes()) {
-                // Обновление сообщения
-                $post = Car::all()->find($id);
-                $post->title = $request->input('title');
-                $post->content = $request->input('content');
-                $post->save();
-                return $this->onSuccess($post, 'Post Updated');
-            }
-            return $this->onError(400, $validator->errors());
-        }
-        return $this->onError(401, 'Unauthorized Access');
+        auth()->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function deletePost(Request $request, $id): JsonResponse
+    /**
+     * Refresh a token.
+     *
+     * @return JsonResponse
+     */
+    public function refresh()
     {
-        $user = $request->user();
-        if ($this->isAdmin($user) || $this->isWriter($user)) {
-            $post = Car::all()->find($id); // Найдем id сообщения
-            $post->delete(); // Удаляем указанное сообщение
-            if (!empty($post)) {
-                return $this->onSuccess($post, 'Post Deleted');
-            }
-            return $this->onError(404, 'Post Not Found');
-        }
-        return $this->onError(401, 'Unauthorized Access');
+        return $this->respondWithToken(auth()->refresh());
     }
 
-    public function deleteUser(Request $request, $id): JsonResponse
+    /**
+     * Get the token array structure.
+     *
+     * @param string $token
+     *
+     * @return JsonResponse
+     */
+    protected function respondWithToken(string $token)
     {
-        $user = $request->user();
-        if ($this->isAdmin($user)) {
-            $user = User::find($id); // Найдем id пользователя
-            if ($user->role !== 1) {
-                $user->delete(); // Удалим указанного пользователя
-                if (!empty($user)) {
-                    return $this->onSuccess('', 'User Deleted');
-                }
-                return $this->onError(404, 'User Not Found');
-            }
-        }
-        return $this->onError(401, 'Unauthorized Access');
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
     }
 }
