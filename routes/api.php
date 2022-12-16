@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -41,12 +42,12 @@ Route::apiResources([
     '/colors' => ColorController::class,
     '/rentCar' => RentCarController::class,
     '/carsInCity' => CarsInCityController::class,
+    '/login' => LoginController::class,
+    '/register' => RegisterController::class
 ]);
 
 Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
-Route::apiResource('/register', RegisterController::class);
-Route::apiResource('/login', RegisterController::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('api_token')
                 ->unique()
                 ->nullable();
-            $table->string('role')->default('user');
+            $table->tinyInteger('role')->default(1);
             $table->bigInteger('current_car_id', false, true)->nullable();
             $table->timestamps();
         });
