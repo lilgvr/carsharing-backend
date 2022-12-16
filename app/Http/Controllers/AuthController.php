@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\UserCredentials;
+use Firebase\JWT\JWT;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Config;
 
 class AuthController extends Controller
 {
@@ -22,15 +27,32 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function login()
+    public function login(Request $request): JsonResponse
     {
-        $credentials = request(['email', 'password']);
+        $key = Config::get('values.key');
+        $alg = Config::get('values.alg');
 
-        if (!$token = auth()->attempt($credentials)) {
+        $data = $request->input();
+
+        $token = JWT::encode([$data["email"]], $key, $alg);
+
+        $user = User::all()->where('email', $data["email"])->first();
+
+        $credentials = UserCredentials::all()->where('email', $data["email"])->first();
+
+        if (!password_verify($data["password"], $credentials["password"])) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $user->api_token = $token;
+        $user->save();
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'data' => $user
+        ]);
     }
 
     /**
@@ -38,7 +60,7 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function me()
+    public function me(): JsonResponse
     {
         return response()->json(auth()->user());
     }
@@ -48,7 +70,7 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->logout();
 
@@ -60,7 +82,7 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return $this->respondWithToken(auth()->refresh());
     }
