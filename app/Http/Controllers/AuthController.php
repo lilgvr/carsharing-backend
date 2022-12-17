@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserCredentials;
+use DateTimeImmutable;
 use Firebase\JWT\JWT;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,17 @@ class AuthController extends Controller
 
         $data = $request->input();
 
-        $token = JWT::encode([$data["email"]], $key, $alg);
+        $now = new DateTimeImmutable();
+        $iat = $now->getTimestamp();
+        $exp = $now->modify('+30 minutes')->getTimestamp();
+
+        $payload = [
+            'iat' => $iat,
+            'exp' => $exp,
+            'email' => $data["email"],
+        ];
+
+        $token = JWT::encode($payload, $key, $alg);
 
         $user = User::all()->where('email', $data["email"])->first();
 
@@ -48,9 +59,11 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
+            'access_token' => [
+                'value' => $token,
+                'payload' => $payload,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,],
             'data' => $user
         ]);
     }

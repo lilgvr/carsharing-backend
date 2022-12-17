@@ -36,9 +36,8 @@ Route::apiResources([
     '/colors' => ColorController::class,
     '/rentCar' => RentCarController::class,
     '/carsInCity' => CarsInCityController::class,
+    '/users' => UserController::class
 ]);
-
-Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
 /*
 |--------------------------------------------------------------------------
@@ -49,13 +48,18 @@ Route::apiResource('/users', UserController::class)->middleware('auth:api');
 
 Route::group([
 
-    'middleware' => ['api', 'auth'],
+    'middleware' => ['api'],
     'prefix' => 'auth'
 
 ], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+
     Route::post('register', [RegisterController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+
+    Route::group(['middleware' => 'auth'], function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('me', [AuthController::class, 'me']);
+    });
+
 });

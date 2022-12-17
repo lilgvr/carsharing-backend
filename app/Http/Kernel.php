@@ -50,7 +50,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ForceJsonResponse::class,
             Cors::class,
-            Authenticate::class
+//            Authenticate::class
         ],
     ];
 
@@ -73,5 +73,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'csrf' => \App\Http\Middleware\VerifyCsrfToken::class,
+//        'cors' => Cors::class
     ];
 }
